@@ -155,19 +155,19 @@ end
 
 
 -- Keymap to compile and run the current Java file
+-- Java: Compile and run current file (basic)
+-- Java: Compile and run current file in vertical terminal
 vim.keymap.set("n", "<leader>rj", function()
-  vim.cmd("write!")
+  vim.cmd("write")  -- Save the file first
 
-  local file = vim.fn.expand("%:p")           -- full path to Hello.java
-  local dir = vim.fn.getcwd()                 -- assumes running from project root
-  local rel_path = vim.fn.expand("%:r")       -- path without .java
-  local class = rel_path:gsub("/", "."):gsub("\\", ".") -- normalize to package.class
+  local file = vim.fn.expand("%:t")             -- e.g., Main.java
+  local file_without_ext = vim.fn.expand("%:r") -- e.g., Main
 
-  local cmd = string.format("cd %s && javac %s && java %s", dir, file, class)
-  vim.cmd("vsplit | terminal " .. cmd)
-end, { desc = "Compile and run Java file (with package)", buffer = true })
+  local compile_cmd = "javac " .. file
+  local run_cmd = "java " .. file_without_ext
 
+  local full_cmd = compile_cmd .. " && " .. run_cmd
 
-
--- This starts a new client & server, or attaches to an existing client & server based on the `root_dir`.
+  vim.cmd("vsplit | terminal " .. full_cmd)  -- vertical split terminal
+end, { desc = "Compile and run Java file in vertical terminal" })
 jdtls.start_or_attach(config)
